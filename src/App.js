@@ -17,11 +17,38 @@ class App extends Component {
   handleChange = (e) => {
     this.setState({search_field: e.target.value});
   }
+  
+  appendToStatePokemon = pokemon_new => {
+    this.setState(state => {
+      const list = [...state.pokemon, pokemon_new];
+      console.log(list);
+      const search_field = "";
+      return{
+        pokemon: list,
+      };
+    })
+  }
+
+  fetchPokemonData = async (pokemon) => {
+    let url = pokemon.url;
+    const response = await fetch(url);
+    const json = await response.json();
+    this.appendToStatePokemon(json);
+    // fetch(url)
+    // .then(response => response.json())
+    // .then(pokemon => this.appendToStatePokemon(pokemon))
+  }
 
   componentDidMount() {
-    fetch('https://jsonplaceholder.typicode.com/users')
+    fetch('https://pokeapi.co/api/v2/pokemon?limit=151')
     .then(resp => resp.json())
-    .then(users => this.setState({pokemon: users}));
+    .then(allpokemon => {
+      console.log(allpokemon);
+      allpokemon.results.forEach(pokemon => {
+        this.fetchPokemonData(pokemon);
+      })
+    });
+    // console.log(this.state.pokemon);
   }
 
   render() {
